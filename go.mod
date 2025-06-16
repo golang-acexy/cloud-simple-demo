@@ -5,8 +5,8 @@ go 1.23.5
 require (
 	github.com/acexy/golang-toolkit v0.0.49-0.20250613071635-e8e796ca2e08
 	github.com/golang-acexy/cloud-database v0.0.0-20250610070434-3c8c3f2883d6
-	github.com/golang-acexy/cloud-web v0.0.0-20250613095548-c18171752282
-	github.com/golang-acexy/starter-gin v0.1.24-0.20250611110638-1f0fcda9ee08
+	github.com/golang-acexy/cloud-web v0.0.0-20250616020228-b7aec69e50c0
+	github.com/golang-acexy/starter-gin v0.1.24-0.20250614084803-bcd9a405d5a3
 	github.com/golang-acexy/starter-gorm v0.1.19-0.20250613102257-4c69c73f1758
 	github.com/golang-acexy/starter-parent v0.1.15
 	github.com/jinzhu/copier v0.4.0

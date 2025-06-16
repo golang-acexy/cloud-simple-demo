@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/acexy/golang-toolkit/logger"
 	"github.com/acexy/golang-toolkit/sys"
+	"github.com/golang-acexy/cloud-simple-demo/internal/handler/rest/adm"
 	"github.com/golang-acexy/cloud-simple-demo/internal/handler/rest/usr"
 	"github.com/golang-acexy/starter-gin/ginstarter"
 	"github.com/golang-acexy/starter-gorm/gormstarter"
@@ -31,6 +32,7 @@ func init() {
 				DebugModule:       true,
 				Routers: []ginstarter.Router{
 					usr.NewUsrUserRouter(),
+					adm.NewAdmUserRouter(),
 				},
 				EnableGoroutineTraceIdResponse: true,
 			},

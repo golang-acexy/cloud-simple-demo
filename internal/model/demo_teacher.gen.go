@@ -74,7 +74,7 @@ func (v Teacher) ToDTO() *TeacherDTO {
 }
 
 func (v Teacher) ParseDTO(dto *TeacherDTO) {
-	err := copier.Copy(&dto, v)
+	err := copier.Copy(dto, v)
 	if err != nil {
 		logger.Logrus().Errorln("copier.Copy error:", err)
 	}
