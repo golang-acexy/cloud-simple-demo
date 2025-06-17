@@ -11,12 +11,12 @@ var studentRouter = func() *StudentRouter[int64, model.StudentSDTO, model.Studen
 	var bizService = biz.NewStudentBizService()
 
 	return &StudentRouter[int64, model.StudentSDTO, model.StudentMDTO, model.StudentQDTO, model.StudentDTO]{
-		BaseRouter: webcloud.NewBaseRouterWithAuthority[int64, model.StudentSDTO, model.StudentMDTO, model.StudentQDTO, model.StudentDTO](bizService, biz.UsrAuthorityFetch, "UserId"),
+		BaseRouter: webcloud.NewBaseRouterWithAuthority[int64, model.StudentSDTO, model.StudentMDTO, model.StudentQDTO, model.StudentDTO](bizService, biz.UsrAuthorityFetch, "UserID"),
 		bizService: bizService,
 	}
 }()
 
-func NewUsrUserRouter() *StudentRouter[int64, model.StudentSDTO, model.StudentMDTO, model.StudentQDTO, model.StudentDTO] {
+func NewStudentRouter() *StudentRouter[int64, model.StudentSDTO, model.StudentMDTO, model.StudentQDTO, model.StudentDTO] {
 	return studentRouter
 }
 
@@ -25,28 +25,21 @@ type StudentRouter[ID webcloud.IDType, S, M, Q, D any] struct {
 	bizService webcloud.BaseBizService[int64, model.StudentSDTO, model.StudentMDTO, model.StudentQDTO, model.StudentDTO]
 }
 
-func (u *StudentRouter[ID, S, M, Q, T]) Info() *ginstarter.RouterInfo {
+func (u *StudentRouter[ID, S, M, Q, D]) Info() *ginstarter.RouterInfo {
 	return &ginstarter.RouterInfo{
 		GroupPath: "usr/student",
 	}
 }
 
-func (u *StudentRouter[ID, S, M, Q, T]) registerBaseHandler(router *ginstarter.RouterWrapper) {
+func (u *StudentRouter[ID, S, M, Q, D]) registerBaseHandler(router *ginstarter.RouterWrapper) {
 	u.BaseRouter.RegisterBaseHandler(router, u.BaseRouter)
 }
 
-func (u *StudentRouter[ID, S, M, Q, T]) Handlers(router *ginstarter.RouterWrapper) {
+func (u *StudentRouter[ID, S, M, Q, D]) Handlers(router *ginstarter.RouterWrapper) {
 	// 注册基础路由
 	u.registerBaseHandler(router)
 
-	// 自定义实现业务
-	router.GET("test", u.test())
+	// 自定义路由业务
 }
 
-// 自定义实现业务
-
-func (*StudentRouter[ID, S, M, Q, T]) test() ginstarter.HandlerWrapper {
-	return func(request *ginstarter.Request) (ginstarter.Response, error) {
-		return ginstarter.RespRestSuccess(), nil
-	}
-}
+// 自定义路由业务

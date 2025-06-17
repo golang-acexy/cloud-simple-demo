@@ -1,0 +1,52 @@
+### 条件查询单条
+POST http://localhost:8080/adm/student/save
+Content-Type: application/json
+
+{
+    "name": "王麻子",
+    "age": 18,
+    "teacherId":1
+}
+
+### 主键查询
+GET http://localhost:8080/adm/student/by-id/1
+
+### 条件查询单条
+POST http://localhost:8080/adm/student/query-one
+Content-Type: application/json
+
+{
+    "name": "王麻子"
+}
+
+### 条件查询多条
+POST http://localhost:8080/adm/student/query
+Content-Type: application/json
+
+{
+    "name": "王麻子"
+}
+
+### 分页查询
+POST http://localhost:8080/adm/student/query-by-page
+Content-Type: application/json
+
+{
+    "number": 1,
+    "size": 10,
+    "condition":{
+        "name": "王麻子"
+    }
+}
+
+### 更新
+PUT http://localhost:8080/adm/student/by-id/2
+Content-Type: application/json
+
+{
+    "name": "大号王麻子",
+    "age": 18
+}
+
+### 删除
+DELETE http://localhost:8080/adm/student/by-id/2

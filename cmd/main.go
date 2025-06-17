@@ -31,8 +31,8 @@ func init() {
 				UseReusePortModel: true,
 				DebugModule:       true,
 				Routers: []ginstarter.Router{
-					usr.NewUsrUserRouter(),
-					adm.NewAdmUserRouter(),
+					usr.NewStudentRouter(),
+					adm.NewTeacherRouter(),
 				},
 				EnableGoroutineTraceIdResponse: true,
 			},
