@@ -31,14 +31,7 @@ func (u *StudentRouter[ID, S, M, Q, D]) Info() *ginstarter.RouterInfo {
 	}
 }
 
-func (u *StudentRouter[ID, S, M, Q, D]) registerBaseHandler(router *ginstarter.RouterWrapper) {
-	u.BaseRouter.RegisterBaseHandler(router, u.BaseRouter)
-}
-
 func (u *StudentRouter[ID, S, M, Q, D]) Handlers(router *ginstarter.RouterWrapper) {
-	// 注册基础路由
-	u.registerBaseHandler(router)
-
 	// 自定义路由业务
 }
 
