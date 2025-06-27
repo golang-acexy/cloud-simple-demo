@@ -14,6 +14,6 @@ func (u *UsrUserAuthority[ID]) GetIdentityID() int64 {
 	return u.ID
 }
 
-func (u *UsrUserAuthority[ID]) GetPlatformID() webcloud.Platform {
+func (u *UsrUserAuthority[ID]) GetPlatform() webcloud.Platform {
 	return AppClient
 }

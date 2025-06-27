@@ -37,7 +37,7 @@ func (v *TeacherBizService[ID, S, M, Q, D]) Save(save *model.TeacherSDTO) (int64
 	return t.ID, nil
 }
 
-func (v *TeacherBizService[ID, S, M, Q, D]) QueryByID(condition map[string]any, result *model.TeacherDTO) (row int64, err error) {
+func (v *TeacherBizService[ID, S, M, Q, D]) BaseQueryByID(condition map[string]any, result *model.TeacherDTO) (row int64, err error) {
 	var r model.Teacher
 	row, err = v.repo.QueryOneByMap(condition, &r)
 	if row > 0 {
@@ -46,7 +46,7 @@ func (v *TeacherBizService[ID, S, M, Q, D]) QueryByID(condition map[string]any, 
 	return
 }
 
-func (v *TeacherBizService[ID, S, M, Q, D]) QueryOne(condition map[string]any, result *model.TeacherDTO) (row int64, err error) {
+func (v *TeacherBizService[ID, S, M, Q, D]) BaseQueryOne(condition map[string]any, result *model.TeacherDTO) (row int64, err error) {
 	var r model.Teacher
 	row, err = v.repo.QueryOneByMap(condition, &r)
 	if row > 0 {
@@ -55,7 +55,7 @@ func (v *TeacherBizService[ID, S, M, Q, D]) QueryOne(condition map[string]any, r
 	return
 }
 
-func (v *TeacherBizService[ID, S, M, Q, D]) Query(condition map[string]any, result *[]*model.TeacherDTO) (row int64, err error) {
+func (v *TeacherBizService[ID, S, M, Q, D]) BaseQuery(condition map[string]any, result *[]*model.TeacherDTO) (row int64, err error) {
 	var r []*model.Teacher
 	row, err = v.repo.QueryByGorm(&r, func(db *gorm.DB) {
 		db.Where(condition).Order(v.DefaultOrderBySQL()).Limit(v.MaxQueryCount()).Scan(&r)
@@ -66,7 +66,7 @@ func (v *TeacherBizService[ID, S, M, Q, D]) Query(condition map[string]any, resu
 	return
 }
 
-func (v *TeacherBizService[ID, S, M, Q, D]) QueryByPager(condition map[string]any, pager *webcloud.Pager[model.TeacherDTO]) error {
+func (v *TeacherBizService[ID, S, M, Q, D]) BaseQueryByPager(condition map[string]any, pager webcloud.Pager[model.TeacherDTO]) error {
 	p := databasecloud.Pager[model.Teacher]{
 		Number: pager.Number,
 		Size:   pager.Size,
@@ -80,10 +80,70 @@ func (v *TeacherBizService[ID, S, M, Q, D]) QueryByPager(condition map[string]an
 	return nil
 }
 
-func (v *TeacherBizService[ID, S, M, Q, D]) ModifyByID(update, condition map[string]any) (int64, error) {
+func (v *TeacherBizService[ID, S, M, Q, D]) BaseModifyByID(update, condition map[string]any) (int64, error) {
 	return v.repo.ModifyByMap(update, condition)
 }
 
-func (v *TeacherBizService[ID, S, M, Q, D]) RemoveByID(condition map[string]any) (int64, error) {
+func (v *TeacherBizService[ID, S, M, Q, D]) BaseRemoveByID(condition map[string]any) (int64, error) {
 	return v.repo.RemoveByMap(condition)
+}
+
+// QueryByID 通过主键查询
+func (v *TeacherBizService[ID, S, M, Q, D]) QueryByID(id ID) *model.TeacherDTO {
+	var r model.Teacher
+	row, err := v.repo.QueryByID(id, &r)
+	if row > 0 && err == nil {
+		return r.ToDTO()
+	}
+	return nil
+}
+
+// QueryOneByCond 通过条件查询一条数据
+func (v *TeacherBizService[ID, S, M, Q, D]) QueryOneByCond(condition *model.TeacherQDTO) *model.TeacherDTO {
+	var r model.Teacher
+	row, err := v.repo.QueryOneByCond(condition.ToT(), &r)
+	if row > 0 && err == nil {
+		return r.ToDTO()
+	}
+	return nil
+}
+
+// QueryByCond 通过条件查询多条数据
+func (v *TeacherBizService[ID, S, M, Q, D]) QueryByCond(condition *model.TeacherQDTO) []*model.TeacherDTO {
+	var rs []*model.Teacher
+	row, err := v.repo.QueryByCond(condition.ToT(), v.DefaultOrderBySQL(), &rs)
+	if row > 0 && err == nil {
+		return model.TeacherSlice(rs).ToDTOs()
+	}
+	return nil
+}
+
+// QueryByPager 分页查询
+func (v *TeacherBizService[ID, S, M, Q, D]) QueryByPager(pager webcloud.PagerDTO[model.TeacherQDTO]) webcloud.Pager[model.TeacherDTO] {
+	p := databasecloud.Pager[model.Teacher]{
+		Number: pager.Number,
+		Size:   pager.Size,
+	}
+	r := webcloud.Pager[model.TeacherDTO]{
+		Number: pager.Number,
+		Size:   pager.Size,
+	}
+	err := v.repo.QueryPageByCond(pager.Condition.ToT(), v.DefaultOrderBySQL(), &p)
+	if err != nil {
+		r.Total = p.Total
+		r.Records = model.TeacherSlice(p.Records).ToDTOs()
+	}
+	return r
+}
+
+// ModifyByID 根据主键修改数据
+func (v *TeacherBizService[ID, S, M, Q, D]) ModifyByID(updated *model.TeacherMDTO) bool {
+	row, err := v.repo.ModifyByID(updated.ToT())
+	return row > 0 && err == nil
+}
+
+// RemoveByID 根据主键删除数据
+func (v *TeacherBizService[ID, S, M, Q, D]) RemoveByID(id ID) bool {
+	row, err := v.repo.RemoveByID(id)
+	return row > 0 && err == nil
 }
