@@ -129,7 +129,7 @@ func (v *StudentBizService[ID, S, M, Q, D]) QueryByPager(pager webcloud.PagerDTO
 		Size:   pager.Size,
 	}
 	err := v.repo.QueryPageByCond(pager.Condition.ToT(), v.DefaultOrderBySQL(), &p)
-	if err != nil {
+	if err == nil {
 		r.Total = p.Total
 		r.Records = model.StudentSlice(p.Records).ToDTOs()
 	}

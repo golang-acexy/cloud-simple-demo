@@ -4,6 +4,7 @@ import (
 	"github.com/golang-acexy/cloud-database/databasecloud"
 	"github.com/golang-acexy/cloud-simple-demo/internal/model"
 	"github.com/golang-acexy/starter-gorm/gormstarter"
+	"gorm.io/gorm"
 )
 
 var studentRepo = &StudentRepo{
@@ -16,11 +17,24 @@ var studentRepo = &StudentRepo{
 	},
 }
 
-func (r StudentRepo) RawMapper() StudentMapper {
-	return r.RawIMapper().(StudentMapper)
-}
 func NewStudentRepo() *StudentRepo {
 	return studentRepo
+}
+
+func (r StudentRepo) RawMapper() StudentMapper {
+	return StudentMapper{r.GormRepository.RawMapper()}
+}
+
+func (r StudentRepo) WithTxRepo(tx *gorm.DB) StudentRepo {
+	return StudentRepo{
+		GormRepository: r.GormRepository.WithTxRepo(tx),
+	}
+}
+
+func (r StudentRepo) NewTxRepo(tx *gorm.DB) StudentRepo {
+	return StudentRepo{
+		GormRepository: r.GormRepository.NewTxRepo(),
+	}
 }
 
 type StudentMapper struct {
