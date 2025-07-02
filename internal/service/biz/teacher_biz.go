@@ -129,7 +129,7 @@ func (v *TeacherBizService[ID, S, M, Q, D]) QueryByPager(pager webcloud.PagerDTO
 		Size:   pager.Size,
 	}
 	err := v.repo.QueryPageByCond(pager.Condition.ToT(), v.DefaultOrderBySQL(), &p)
-	if err != nil {
+	if err == nil {
 		r.Total = p.Total
 		r.Records = model.TeacherSlice(p.Records).ToDTOs()
 	}
@@ -139,6 +139,18 @@ func (v *TeacherBizService[ID, S, M, Q, D]) QueryByPager(pager webcloud.PagerDTO
 // ModifyByID 根据主键修改数据
 func (v *TeacherBizService[ID, S, M, Q, D]) ModifyByID(updated *model.TeacherMDTO) bool {
 	row, err := v.repo.ModifyByID(updated.ToT())
+	return row > 0 && err == nil
+}
+
+// ModifyByIDExcludeZeroField 根据主键修改数据 不包括零值数据
+func (v *TeacherBizService[ID, S, M, Q, D]) ModifyByIDExcludeZeroField(updated *model.TeacherMDTO) bool {
+	row, err := v.repo.ModifyByIDExcludeZeroField(updated.ToT())
+	return row > 0 && err == nil
+}
+
+// ModifyByIdUseMap 根据主键修改数据 使用map
+func (v *TeacherBizService[ID, S, M, Q, D]) ModifyByIdUseMap(updated map[string]any, id ID) bool {
+	row, err := v.repo.ModifyByIdUseMap(updated, id)
 	return row > 0 && err == nil
 }
 

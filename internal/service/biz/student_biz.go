@@ -3,7 +3,6 @@ package biz
 import (
 	"github.com/golang-acexy/cloud-database/databasecloud"
 	"github.com/golang-acexy/cloud-simple-demo/internal/model"
-	"github.com/golang-acexy/cloud-simple-demo/internal/service/repo"
 	"github.com/golang-acexy/cloud-web/webcloud"
 	"gorm.io/gorm"
 )
@@ -139,6 +138,18 @@ func (v *StudentBizService[ID, S, M, Q, D]) QueryByPager(pager webcloud.PagerDTO
 // ModifyByID 根据主键修改数据
 func (v *StudentBizService[ID, S, M, Q, D]) ModifyByID(updated *model.StudentMDTO) bool {
 	row, err := v.repo.ModifyByID(updated.ToT())
+	return row > 0 && err == nil
+}
+
+// ModifyByIDExcludeZeroField 根据主键修改数据 不包括零值数据
+func (v *StudentBizService[ID, S, M, Q, D]) ModifyByIDExcludeZeroField(updated *model.StudentMDTO) bool {
+	row, err := v.repo.ModifyByIDExcludeZeroField(updated.ToT())
+	return row > 0 && err == nil
+}
+
+// ModifyByIdUseMap 根据主键修改数据 使用map
+func (v *StudentBizService[ID, S, M, Q, D]) ModifyByIdUseMap(updated map[string]any, id ID) bool {
+	row, err := v.repo.ModifyByIdUseMap(updated, id)
 	return row > 0 && err == nil
 }
 

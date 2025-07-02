@@ -31,7 +31,7 @@ func (r StudentRepo) WithTxRepo(tx *gorm.DB) StudentRepo {
 	}
 }
 
-func (r StudentRepo) NewTxRepo(tx *gorm.DB) StudentRepo {
+func (r StudentRepo) NewTxRepo() StudentRepo {
 	return StudentRepo{
 		GormRepository: r.GormRepository.NewTxRepo(),
 	}
