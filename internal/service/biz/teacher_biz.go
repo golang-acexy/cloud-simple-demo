@@ -29,6 +29,9 @@ func (v *TeacherBizService[ID, S, M, Q, D]) DefaultOrderBySQL() string {
 }
 
 func (v *TeacherBizService[ID, S, M, Q, D]) Save(save *model.TeacherSDTO) (int64, error) {
+	if save == nil {
+		return 0, nil
+	}
 	var t = save.ToT()
 	_, err := v.repo.SaveExcludeZeroField(t)
 	if err != nil {
@@ -100,6 +103,9 @@ func (v *TeacherBizService[ID, S, M, Q, D]) QueryByID(id ID) *model.TeacherDTO {
 
 // QueryOneByCond 通过条件查询一条数据
 func (v *TeacherBizService[ID, S, M, Q, D]) QueryOneByCond(condition *model.TeacherQDTO) *model.TeacherDTO {
+	if condition == nil {
+		return nil
+	}
 	var r model.Teacher
 	row, err := v.repo.QueryOneByCond(condition.ToT(), &r)
 	if row > 0 && err == nil {
@@ -110,6 +116,9 @@ func (v *TeacherBizService[ID, S, M, Q, D]) QueryOneByCond(condition *model.Teac
 
 // QueryByCond 通过条件查询多条数据
 func (v *TeacherBizService[ID, S, M, Q, D]) QueryByCond(condition *model.TeacherQDTO) []*model.TeacherDTO {
+	if condition == nil {
+		return nil
+	}
 	var rs []*model.Teacher
 	row, err := v.repo.QueryByCond(condition.ToT(), v.DefaultOrderBySQL(), &rs)
 	if row > 0 && err == nil {
@@ -138,12 +147,18 @@ func (v *TeacherBizService[ID, S, M, Q, D]) QueryByPager(pager webcloud.PagerDTO
 
 // ModifyByID 根据主键修改数据
 func (v *TeacherBizService[ID, S, M, Q, D]) ModifyByID(updated *model.TeacherMDTO) bool {
+	if updated == nil {
+		return false
+	}
 	row, err := v.repo.ModifyByID(updated.ToT())
 	return row > 0 && err == nil
 }
 
 // ModifyByIDExcludeZeroField 根据主键修改数据 不包括零值数据
 func (v *TeacherBizService[ID, S, M, Q, D]) ModifyByIDExcludeZeroField(updated *model.TeacherMDTO) bool {
+	if updated == nil {
+		return false
+	}
 	row, err := v.repo.ModifyByIDExcludeZeroField(updated.ToT())
 	return row > 0 && err == nil
 }
@@ -157,5 +172,20 @@ func (v *TeacherBizService[ID, S, M, Q, D]) ModifyByIdUseMap(updated map[string]
 // RemoveByID 根据主键删除数据
 func (v *TeacherBizService[ID, S, M, Q, D]) RemoveByID(id ID) bool {
 	row, err := v.repo.RemoveByID(id)
+	return row > 0 && err == nil
+}
+
+// RemoveByCond 根据条件删除数据
+func (v *TeacherBizService[ID, S, M, Q, D]) RemoveByCond(condition *model.TeacherDTO) bool {
+	if condition == nil {
+		return false
+	}
+	row, err := v.repo.RemoveByCond(condition.ToT())
+	return row > 0 && err == nil
+}
+
+// RemoveByMap 根据条件删除数据
+func (v *TeacherBizService[ID, S, M, Q, D]) RemoveByMap(condition map[string]any) bool {
+	row, err := v.repo.RemoveByMap(condition)
 	return row > 0 && err == nil
 }
