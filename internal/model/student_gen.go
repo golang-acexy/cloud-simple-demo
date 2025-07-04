@@ -45,7 +45,7 @@ type StudentMDTO struct {
 
 // StudentQDTO 查询时结构体 限定只允许使用的字段
 type StudentQDTO struct {
-	ID        int64  `gorm:"primaryKey;<-:false" json:"id"`
+	ID        int64  `json:"id"`
 	Name      string `json:"name"`
 	Sex       string `json:"sex"`
 	Age       int32  `json:"age"`
@@ -54,9 +54,9 @@ type StudentQDTO struct {
 
 // StudentDTO 结果结构体 限定只允许展示的字段
 type StudentDTO struct {
-	ID         int64          `gorm:"primaryKey;<-:false" json:"id"`
-	CreateTime json.Timestamp `gorm:"<-:false" json:"createTime"`
-	UpdateTime json.Timestamp `gorm:"<-:false" json:"updateTime"`
+	ID         int64          `json:"id"`
+	CreateTime json.Timestamp `json:"createTime"`
+	UpdateTime json.Timestamp `json:"updateTime"`
 	Name       string         `json:"name"`
 	Sex        string         `json:"sex"`
 	Age        int32          `json:"age"`
