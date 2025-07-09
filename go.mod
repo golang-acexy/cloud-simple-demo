@@ -3,9 +3,9 @@ module github.com/golang-acexy/cloud-simple-demo
 go 1.23.5
 
 require (
-	github.com/acexy/golang-toolkit v0.0.49-0.20250616080607-dd91e26e3fca
+	github.com/acexy/golang-toolkit v0.0.49
 	github.com/golang-acexy/cloud-database v0.0.0-20250628082836-391f81124c41
-	github.com/golang-acexy/cloud-web v0.0.0-20250630115715-2467eb24abd0
+	github.com/golang-acexy/cloud-web v0.0.0-20250709104526-b7abbf5a58ca
 	github.com/golang-acexy/starter-gin v0.1.24-0.20250627064252-c2228abb471d
 	github.com/golang-acexy/starter-gorm v0.1.19-0.20250613102257-4c69c73f1758
 	github.com/golang-acexy/starter-parent v0.1.15
@@ -23,7 +23,7 @@ require (
 	github.com/gin-gonic/gin v1.10.1 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.26.0 // indirect
+	github.com/go-playground/validator/v10 v10.27.0 // indirect
 	github.com/go-sql-driver/mysql v1.9.3 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/golang-acexy/starter-mongo v0.1.7-0.20250610064217-9e0cfa1e911c // indirect
@@ -38,7 +38,7 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
-	github.com/klauspost/cpuid/v2 v2.2.10 // indirect
+	github.com/klauspost/cpuid/v2 v2.2.11 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/libp2p/go-reuseport v0.4.0 // indirect
@@ -53,7 +53,7 @@ require (
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/timandy/routine v1.1.5 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
-	github.com/ugorji/go/codec v1.2.14 // indirect
+	github.com/ugorji/go/codec v1.3.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect

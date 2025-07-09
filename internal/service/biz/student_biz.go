@@ -69,7 +69,7 @@ func (v *StudentBizService[ID, S, M, Q, D]) BaseQuery(condition map[string]any, 
 	return
 }
 
-func (v *StudentBizService[ID, S, M, Q, D]) BaseQueryByPager(condition map[string]any, pager webcloud.Pager[model.StudentDTO]) error {
+func (v *StudentBizService[ID, S, M, Q, D]) BaseQueryByPager(condition map[string]any, pager *webcloud.Pager[model.StudentDTO]) error {
 	p := databasecloud.Pager[model.Student]{
 		Number: pager.Number,
 		Size:   pager.Size,
