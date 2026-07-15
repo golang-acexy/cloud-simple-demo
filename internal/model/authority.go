@@ -6,14 +6,14 @@ const (
 	AppClient webcloud.Platform = "appClient"
 )
 
-type UsrUserAuthority[ID int64] struct {
+type UsrUserAuthority struct {
 	ID int64
 }
 
-func (u *UsrUserAuthority[ID]) GetIdentityID() int64 {
+func (u *UsrUserAuthority) GetIdentityID() int64 {
 	return u.ID
 }
 
-func (u *UsrUserAuthority[ID]) GetPlatform() webcloud.Platform {
+func (u *UsrUserAuthority) GetPlatform() webcloud.Platform {
 	return AppClient
 }

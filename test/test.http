@@ -1,52 +1,44 @@
-### 条件查询单条
-POST http://localhost:8080/adm/student/save
+### 创建部门
+POST http://localhost:8080/adm/department/save
 Content-Type: application/json
 
 {
-    "name": "王麻子",
-    "age": 18,
-    "teacherId":1
+  "code": "DEMO",
+  "name": "Demo Department",
+  "description": "manual verification",
+  "status": 1
 }
 
-### 主键查询
-GET http://localhost:8080/adm/student/by-id/1
-
-### 条件查询单条
-POST http://localhost:8080/adm/student/query-one
+### 用户创建员工，userId 将被 X-User-ID 强制覆盖
+POST http://localhost:8080/usr/employee/save
 Content-Type: application/json
+X-User-ID: 10001
 
 {
-    "name": "王麻子"
+  "departmentId": 1,
+  "userId": 99999,
+  "employeeNo": "EMP-001",
+  "name": "Alice",
+  "email": "alice@example.com",
+  "status": 1
 }
 
-### 条件查询多条
-POST http://localhost:8080/adm/student/query
+### 用户查询自己的员工
+GET http://localhost:8080/usr/employee/by-id/1
+X-User-ID: 10001
+
+### 用户分页查询自己的员工
+POST http://localhost:8080/usr/employee/query-by-page
 Content-Type: application/json
+X-User-ID: 10001
 
 {
-    "name": "王麻子"
+  "number": 1,
+  "size": 10,
+  "condition": {
+    "name": "Alice"
+  }
 }
 
-### 分页查询
-POST http://localhost:8080/adm/student/query-by-page
-Content-Type: application/json
-
-{
-    "number": 1,
-    "size": 10,
-    "condition":{
-        "name": "王麻子"
-    }
-}
-
-### 更新
-PUT http://localhost:8080/adm/student/by-id/2
-Content-Type: application/json
-
-{
-    "name": "大号王麻子",
-    "age": 18
-}
-
-### 删除
-DELETE http://localhost:8080/adm/student/by-id/2
+### 管理端统计部门员工数量
+GET http://localhost:8080/adm/employee/count-by-department/1

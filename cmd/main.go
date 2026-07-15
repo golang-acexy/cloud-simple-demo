@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/acexy/golang-toolkit/logger"
 	"github.com/acexy/golang-toolkit/sys"
 	"github.com/golang-acexy/cloud-simple-demo/internal/handler/rest/adm"
@@ -15,14 +16,18 @@ var starterLoader *parent.StarterLoader
 
 func init() {
 	logger.EnableConsole(logger.TraceLevel, false)
-	starterLoader = parent.NewStarterLoader([]parent.Starter{
+	starterLoader = parent.InitStarterLoader([]parent.Starter{
 		&gormstarter.GormStarter{
 			Config: gormstarter.GormConfig{
-				Username: "root",
-				Password: "root",
-				Database: "test",
-				Host:     "127.0.0.1",
-				Port:     13306,
+				MySQL: &gormstarter.MySQLConfig{
+					DatabaseConfig: gormstarter.DatabaseConfig{
+						Username: "root",
+						Password: "root",
+						Database: "test",
+						Host:     "127.0.0.1",
+						Port:     13306,
+					},
+				},
 			},
 		},
 		&ginstarter.GinStarter{
@@ -31,10 +36,13 @@ func init() {
 				UseReusePortModel: true,
 				DebugModule:       true,
 				Routers: []ginstarter.Router{
-					usr.NewStudentRouter(),
-					adm.NewTeacherRouter(),
+					usr.NewEmployeeRouter(),
+					adm.NewDepartmentRouter(),
+					adm.NewEmployeeRouter(),
 				},
-				EnableGoroutineTraceIdResponse: true,
+				TraceIDResponse: func() string {
+					return logger.GetTraceId()
+				},
 			},
 		},
 	})
