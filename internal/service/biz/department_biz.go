@@ -36,10 +36,49 @@ func (v *DepartmentBizService) Save(save *model.DepartmentSDTO) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
+	if _, err = v.repo.Save(entity); err != nil {
+		return 0, err
+	}
+	return entity.ID, nil
+}
+
+func (v *DepartmentBizService) SaveWithoutZeroFields(save *model.DepartmentSDTO) (int64, error) {
+	if save == nil {
+		return 0, webcloud.ErrBadRequestParameters
+	}
+	entity, err := save.ToT()
+	if err != nil {
+		return 0, err
+	}
 	if _, err = v.repo.SaveWithoutZeroFields(entity); err != nil {
 		return 0, err
 	}
 	return entity.ID, nil
+}
+
+func (v *DepartmentBizService) SaveBatch(saves []*model.DepartmentSDTO) ([]int64, error) {
+	if len(saves) == 0 {
+		return make([]int64, 0), nil
+	}
+	entities := make([]*model.Department, 0, len(saves))
+	for _, save := range saves {
+		if save == nil {
+			return nil, webcloud.ErrBadRequestParameters
+		}
+		entity, err := save.ToT()
+		if err != nil {
+			return nil, err
+		}
+		entities = append(entities, entity)
+	}
+	if _, err := v.repo.SaveBatch(entities); err != nil {
+		return nil, err
+	}
+	ids := make([]int64, len(entities))
+	for index, entity := range entities {
+		ids[index] = entity.ID
+	}
+	return ids, nil
 }
 
 func (v *DepartmentBizService) BaseQueryByID(condition map[string]any) (*model.DepartmentDTO, error) {
@@ -118,6 +157,25 @@ func (v *DepartmentBizService) QueryByID(id int64) (*model.DepartmentDTO, error)
 	return entity.ToDTO()
 }
 
+func (v *DepartmentBizService) QueryByIDs(ids []int64) ([]*model.DepartmentDTO, error) {
+	if len(ids) == 0 {
+		return make([]*model.DepartmentDTO, 0), nil
+	}
+	queryIDs := make([]any, len(ids))
+	for index, id := range ids {
+		queryIDs[index] = id
+	}
+	entities := make([]*model.Department, 0, len(ids))
+	if _, err := v.repo.QueryByIDs(queryIDs, &entities); err != nil {
+		return nil, err
+	}
+	return model.DepartmentSlice(entities).ToDTOs()
+}
+
+func (v *DepartmentBizService) ExistsByID(id int64) (bool, error) {
+	return v.repo.ExistsByID(id)
+}
+
 func (v *DepartmentBizService) QueryOneByCond(condition *model.DepartmentQDTO) (*model.DepartmentDTO, error) {
 	if condition == nil {
 		return nil, webcloud.ErrBadRequestParameters
@@ -147,6 +205,17 @@ func (v *DepartmentBizService) QueryByCond(condition *model.DepartmentQDTO) ([]*
 		return nil, err
 	}
 	return model.DepartmentSlice(entities).ToDTOs()
+}
+
+func (v *DepartmentBizService) CountByCond(condition *model.DepartmentQDTO) (int64, error) {
+	if condition == nil {
+		return 0, webcloud.ErrBadRequestParameters
+	}
+	entityCondition, err := condition.ToT()
+	if err != nil {
+		return 0, err
+	}
+	return v.repo.CountByCond(entityCondition)
 }
 
 func (v *DepartmentBizService) QueryPage(pager webcloud.PagerDTO[model.DepartmentQDTO]) (webcloud.Pager[model.DepartmentDTO], error) {
@@ -206,6 +275,17 @@ func (v *DepartmentBizService) ModifyByIDWithMap(id int64, updated map[string]an
 
 func (v *DepartmentBizService) RemoveByID(id int64) (int64, error) {
 	return v.repo.RemoveByID(id)
+}
+
+func (v *DepartmentBizService) RemoveByIDs(ids []int64) (int64, error) {
+	if len(ids) == 0 {
+		return 0, nil
+	}
+	removeIDs := make([]any, len(ids))
+	for index, id := range ids {
+		removeIDs[index] = id
+	}
+	return v.repo.RemoveByIDs(removeIDs)
 }
 
 func (v *DepartmentBizService) RemoveByCond(condition *model.DepartmentQDTO) (int64, error) {
