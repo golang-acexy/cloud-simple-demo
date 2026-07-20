@@ -101,11 +101,8 @@ func (v *EmployeeBizService) BaseQueryOne(condition map[string]any) (*model.Empl
 
 func (v *EmployeeBizService) BaseQuery(condition map[string]any) ([]*model.EmployeeDTO, error) {
 	entities := make([]*model.Employee, 0)
-	db, err := v.repo.TableGORMDB()
-	if err != nil {
-		return nil, err
-	}
-	err = db.Where(condition).Order(v.DefaultOrderBy()).Limit(v.MaxQuerySize()).Scan(&entities).Error
+	db := v.repo.TableGormDB()
+	err := db.Where(condition).Order(v.DefaultOrderBy()).Limit(v.MaxQuerySize()).Scan(&entities).Error
 	if err != nil {
 		return nil, err
 	}
@@ -113,19 +110,13 @@ func (v *EmployeeBizService) BaseQuery(condition map[string]any) ([]*model.Emplo
 }
 
 func (v *EmployeeBizService) BaseQueryPage(condition map[string]any, pager *webcloud.Pager[model.EmployeeDTO]) error {
-	countDB, err := v.repo.TableGORMDB()
-	if err != nil {
-		return err
-	}
-	if err = countDB.Where(condition).Count(&pager.Total).Error; err != nil || pager.Total == 0 {
+	countDB := v.repo.TableGormDB()
+	if err := countDB.Where(condition).Count(&pager.Total).Error; err != nil || pager.Total == 0 {
 		return err
 	}
 	entities := make([]*model.Employee, 0, pager.Size)
-	pageDB, err := v.repo.TableGORMDB()
-	if err != nil {
-		return err
-	}
-	if err = pageDB.Where(condition).
+	pageDB := v.repo.TableGormDB()
+	if err := pageDB.Where(condition).
 		Order(v.DefaultOrderBy()).
 		Limit(pager.Size).
 		Offset((pager.Number - 1) * pager.Size).
