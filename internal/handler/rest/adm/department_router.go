@@ -31,6 +31,6 @@ func (r *DepartmentRouter) Info() *ginstarter.RouterInfo {
 }
 
 func (r *DepartmentRouter) Handlers(router *ginstarter.RouterWrapper) {
-	r.RegisterBaseHandlers(router)
+	r.RegisterBaseHandlers(router, r)
 	// 在此处注册自定义业务路由。
 }

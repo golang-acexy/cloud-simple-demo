@@ -84,6 +84,9 @@ Keep generated foundations and custom behavior separate:
 - Add model-independent business methods in the corresponding BizService extension file.
 - Add specialized SQL or repository operations in a Repository or Mapper extension.
 - Add non-standard HTTP endpoints on the concrete router.
+- Override a standard HTTP handler by defining the same method on the concrete
+  router; `RegisterBaseHandlers(router, r)` dispatches to that method and keeps
+  embedded defaults for handlers that are not overridden.
 - Preserve generated base contracts so the standard CRUD flow remains available.
 
 See `employee_extension.go` in the handler and business-service packages for the extension pattern.
