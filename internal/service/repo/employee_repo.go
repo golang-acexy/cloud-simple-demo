@@ -40,8 +40,3 @@ func NewEmployeeRepo() EmployeeRepo {
 // 在此处扩展自定义 Mapper 能力。
 
 // 在此处扩展自定义 Repository 能力。
-
-// CountByDepartmentID 统计指定部门的员工数量。
-func (r EmployeeRepo) CountByDepartmentID(departmentID int64) (int64, error) {
-	return r.CountByMap(map[string]any{"department_id": departmentID})
-}

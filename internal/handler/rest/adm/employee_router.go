@@ -32,6 +32,5 @@ func (r *EmployeeRouter) Info() *ginstarter.RouterInfo {
 
 func (r *EmployeeRouter) Handlers(router *ginstarter.RouterWrapper) {
 	r.RegisterBaseHandlers(router, r)
-	router.GET("count-by-department/:departmentId", r.CountByDepartment())
 	// 在此处注册自定义业务路由。
 }

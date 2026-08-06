@@ -1,11 +1,15 @@
 package biz
 
 import (
+	"time"
+
+	"github.com/acexy/golang-toolkit/util/str"
 	"github.com/golang-acexy/cloud-database/databasecloud"
 	"github.com/golang-acexy/cloud-database/databasecloud/rds"
 	"github.com/golang-acexy/cloud-simple-demo/internal/model"
 	repo "github.com/golang-acexy/cloud-simple-demo/internal/service/repo"
 	"github.com/golang-acexy/cloud-web/webcloud"
+	"github.com/golang-acexy/starter-gorm/gormstarter"
 )
 
 var employeeBizService = &EmployeeBizService{
@@ -26,6 +30,62 @@ func (v *EmployeeBizService) MaxQuerySize() int {
 
 func (v *EmployeeBizService) DefaultOrderBy() string {
 	return "id desc"
+}
+
+func (v *EmployeeBizService) DefaultTimeRangeField() string {
+	return "created_at"
+}
+
+func (v *EmployeeBizService) AllowedTimeRangeFields() []string {
+	return []string{
+		"created_at",
+		"updated_at",
+	}
+}
+
+// convertTimeRanges 校验时间字段白名单，并转换为 GORM 分页查询参数。
+func (v *EmployeeBizService) convertTimeRanges(timeRanges []webcloud.TimeRange) ([]gormstarter.TimeRange, error) {
+	allowedFields := v.AllowedTimeRangeFields()
+	result := make([]gormstarter.TimeRange, 0, len(timeRanges))
+	defaultFieldUsed := false
+	for _, timeRange := range timeRanges {
+		field := str.CamelToSnake(timeRange.Field)
+		if field == "" {
+			if defaultFieldUsed {
+				return nil, webcloud.ErrBadRequestParameters
+			}
+			defaultFieldUsed = true
+			field = v.DefaultTimeRangeField()
+		}
+		allowed := false
+		for _, allowedField := range allowedFields {
+			if field == allowedField {
+				allowed = true
+				break
+			}
+		}
+		if !allowed || timeRange.Start.IsZero() && timeRange.End.IsZero() {
+			return nil, webcloud.ErrBadRequestParameters
+		}
+		if !timeRange.Start.IsZero() && !timeRange.End.IsZero() && !timeRange.Start.Before(timeRange.End.Time) {
+			return nil, webcloud.ErrBadRequestParameters
+		}
+		var startTime, endTime *time.Time
+		if !timeRange.Start.IsZero() {
+			value := timeRange.Start.Time
+			startTime = &value
+		}
+		if !timeRange.End.IsZero() {
+			value := timeRange.End.Time
+			endTime = &value
+		}
+		result = append(result, gormstarter.TimeRange{
+			Field:     field,
+			StartTime: startTime,
+			EndTime:   endTime,
+		})
+	}
+	return result, nil
 }
 
 func (v *EmployeeBizService) Save(save *model.EmployeeSDTO) (int64, error) {
@@ -109,25 +169,33 @@ func (v *EmployeeBizService) BaseQuery(condition map[string]any) ([]*model.Emplo
 	return model.EmployeeSlice(entities).ToDTOs()
 }
 
-func (v *EmployeeBizService) BaseQueryPage(condition map[string]any, pager *webcloud.Pager[model.EmployeeDTO]) error {
-	countDB := v.repo.TableGormDB()
-	if err := countDB.Where(condition).Count(&pager.Total).Error; err != nil || pager.Total == 0 {
+func (v *EmployeeBizService) BaseQueryPage(condition map[string]any, timeRanges []webcloud.TimeRange, pager *webcloud.Pager[model.EmployeeDTO]) error {
+	ranges, err := v.convertTimeRanges(timeRanges)
+	if err != nil {
 		return err
 	}
-	entities := make([]*model.Employee, 0, pager.Size)
-	pageDB := v.repo.TableGormDB()
-	if err := pageDB.Where(condition).
-		Order(v.DefaultOrderBy()).
-		Limit(pager.Size).
-		Offset((pager.Number - 1) * pager.Size).
-		Scan(&entities).Error; err != nil {
+	page := databasecloud.Pager[model.Employee]{
+		Number: pager.Number,
+		Size:   pager.Size,
+	}
+	query := rds.PageQuery{
+		OrderBySQL: v.DefaultOrderBy(),
+		TimeRanges: ranges,
+	}
+	if len(condition) == 0 {
+		err = v.repo.QueryPageByCond(model.Employee{}, query, &page)
+	} else {
+		err = v.repo.QueryPageByMap(condition, query, &page)
+	}
+	if err != nil {
 		return err
 	}
-	records, err := model.EmployeeSlice(entities).ToDTOs()
+	records, err := model.EmployeeSlice(page.Records).ToDTOs()
 	if err != nil {
 		return err
 	}
 	pager.Records = records
+	pager.Total = page.Total
 	return nil
 }
 
@@ -167,46 +235,37 @@ func (v *EmployeeBizService) ExistsByID(id int64) (bool, error) {
 	return v.repo.ExistsByID(id)
 }
 
-func (v *EmployeeBizService) QueryOneByCond(condition *model.EmployeeQDTO) (*model.EmployeeDTO, error) {
-	if condition == nil {
-		return nil, webcloud.ErrBadRequestParameters
-	}
+func (v *EmployeeBizService) QueryOneByCond(condition model.EmployeeQDTO) (*model.EmployeeDTO, error) {
 	entityCondition, err := condition.ToT()
 	if err != nil {
 		return nil, err
 	}
 	var entity model.Employee
-	row, err := v.repo.QueryOneByCond(entityCondition, &entity)
+	row, err := v.repo.QueryOneByCond(*entityCondition, &entity)
 	if err != nil || row == 0 {
 		return nil, err
 	}
 	return entity.ToDTO()
 }
 
-func (v *EmployeeBizService) QueryByCond(condition *model.EmployeeQDTO) ([]*model.EmployeeDTO, error) {
-	if condition == nil {
-		return nil, webcloud.ErrBadRequestParameters
-	}
+func (v *EmployeeBizService) QueryByCond(condition model.EmployeeQDTO) ([]*model.EmployeeDTO, error) {
 	entityCondition, err := condition.ToT()
 	if err != nil {
 		return nil, err
 	}
 	entities := make([]*model.Employee, 0)
-	if _, err = v.repo.QueryByCond(entityCondition, v.DefaultOrderBy(), &entities); err != nil {
+	if _, err = v.repo.QueryByCond(*entityCondition, v.DefaultOrderBy(), &entities); err != nil {
 		return nil, err
 	}
 	return model.EmployeeSlice(entities).ToDTOs()
 }
 
-func (v *EmployeeBizService) CountByCond(condition *model.EmployeeQDTO) (int64, error) {
-	if condition == nil {
-		return 0, webcloud.ErrBadRequestParameters
-	}
+func (v *EmployeeBizService) CountByCond(condition model.EmployeeQDTO) (int64, error) {
 	entityCondition, err := condition.ToT()
 	if err != nil {
 		return 0, err
 	}
-	return v.repo.CountByCond(entityCondition)
+	return v.repo.CountByCond(*entityCondition)
 }
 
 func (v *EmployeeBizService) QueryPage(pager webcloud.PagerDTO[model.EmployeeQDTO]) (webcloud.Pager[model.EmployeeDTO], error) {
@@ -214,11 +273,18 @@ func (v *EmployeeBizService) QueryPage(pager webcloud.PagerDTO[model.EmployeeQDT
 	if err != nil {
 		return webcloud.Pager[model.EmployeeDTO]{}, err
 	}
+	ranges, err := v.convertTimeRanges(pager.TimeRanges)
+	if err != nil {
+		return webcloud.Pager[model.EmployeeDTO]{}, err
+	}
 	page := databasecloud.Pager[model.Employee]{
 		Number: pager.Number,
 		Size:   pager.Size,
 	}
-	if err = v.repo.QueryPageByCond(condition, rds.PageQuery{OrderBySQL: v.DefaultOrderBy()}, &page); err != nil {
+	if err = v.repo.QueryPageByCond(*condition, rds.PageQuery{
+		OrderBySQL: v.DefaultOrderBy(),
+		TimeRanges: ranges,
+	}, &page); err != nil {
 		return webcloud.Pager[model.EmployeeDTO]{}, err
 	}
 	records, err := model.EmployeeSlice(page.Records).ToDTOs()
@@ -279,15 +345,12 @@ func (v *EmployeeBizService) RemoveByIDs(ids []int64) (int64, error) {
 	return v.repo.RemoveByIDs(removeIDs)
 }
 
-func (v *EmployeeBizService) RemoveByCond(condition *model.EmployeeQDTO) (int64, error) {
-	if condition == nil {
-		return 0, webcloud.ErrBadRequestParameters
-	}
+func (v *EmployeeBizService) RemoveByCond(condition model.EmployeeQDTO) (int64, error) {
 	entity, err := condition.ToT()
 	if err != nil {
 		return 0, err
 	}
-	return v.repo.RemoveByCond(entity)
+	return v.repo.RemoveByCond(*entity)
 }
 
 func (v *EmployeeBizService) RemoveByMap(condition map[string]any) (int64, error) {
