@@ -37,8 +37,11 @@ X-User-ID: 10001
   "size": 10,
   "condition": {
     "name": "Alice"
-  }
+  },
+  "timeRanges": [
+    {
+      "field": "createdAt",
+      "start": 1704067200000
+    }
+  ]
 }
-
-### 管理端统计部门员工数量
-GET http://localhost:8080/adm/employee/count-by-department/1

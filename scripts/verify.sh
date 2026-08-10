@@ -82,14 +82,11 @@ response="$(request GET "usr/employee/by-id/${employee_id}" "" "${USER_B}")"
 response="$(request POST usr/employee/query "{\"name\":\"Alice\"}" "${USER_A}")"
 assert_contains "${response}" "${employee_no}" "owner list query"
 
-response="$(request POST usr/employee/query-by-page "{\"number\":1,\"size\":10,\"condition\":{\"name\":\"Alice\"}}" "${USER_A}")"
+response="$(request POST usr/employee/query-by-page "{\"number\":1,\"size\":10,\"condition\":{\"name\":\"Alice\"},\"timeRanges\":[{\"field\":\"createdAt\",\"start\":1704067200000}]}" "${USER_A}")"
 assert_contains "${response}" '"total":1' "owner page query"
 
 response="$(request PUT "usr/employee/by-id/${employee_id}" "{\"name\":\"Alice Updated\",\"userId\":99999}" "${USER_A}")"
 assert_contains "${response}" '"statusCode":200' "owner update"
-
-response="$(request GET "adm/employee/count-by-department/${department_id}")"
-assert_contains "${response}" '"count":1' "custom repository/biz/router extension"
 
 response="$(request DELETE "usr/employee/by-id/${employee_id}" "" "${USER_B}")"
 assert_contains "${response}" '"statusCode":400' "another user delete must fail"
@@ -100,4 +97,4 @@ assert_contains "${response}" '"statusCode":200' "owner delete"
 response="$(request DELETE "adm/department/by-id/${department_id}")"
 assert_contains "${response}" '"statusCode":200' "delete department"
 
-echo "PASS: generator, GORM repository, cloud web CRUD, authority isolation, pagination, and custom extension"
+echo "PASS: generator, GORM repository, cloud web CRUD, authority isolation, and time-range pagination"

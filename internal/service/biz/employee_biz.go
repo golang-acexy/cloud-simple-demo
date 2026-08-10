@@ -1,15 +1,11 @@
 package biz
 
 import (
-	"time"
-
-	"github.com/acexy/golang-toolkit/util/str"
 	"github.com/golang-acexy/cloud-database/databasecloud"
 	"github.com/golang-acexy/cloud-database/databasecloud/rds"
 	"github.com/golang-acexy/cloud-simple-demo/internal/model"
 	repo "github.com/golang-acexy/cloud-simple-demo/internal/service/repo"
 	"github.com/golang-acexy/cloud-web/webcloud"
-	"github.com/golang-acexy/starter-gorm/gormstarter"
 )
 
 var employeeBizService = &EmployeeBizService{
@@ -41,51 +37,6 @@ func (v *EmployeeBizService) AllowedTimeRangeFields() []string {
 		"created_at",
 		"updated_at",
 	}
-}
-
-// convertTimeRanges 校验时间字段白名单，并转换为 GORM 分页查询参数。
-func (v *EmployeeBizService) convertTimeRanges(timeRanges []webcloud.TimeRange) ([]gormstarter.TimeRange, error) {
-	allowedFields := v.AllowedTimeRangeFields()
-	result := make([]gormstarter.TimeRange, 0, len(timeRanges))
-	defaultFieldUsed := false
-	for _, timeRange := range timeRanges {
-		field := str.CamelToSnake(timeRange.Field)
-		if field == "" {
-			if defaultFieldUsed {
-				return nil, webcloud.ErrBadRequestParameters
-			}
-			defaultFieldUsed = true
-			field = v.DefaultTimeRangeField()
-		}
-		allowed := false
-		for _, allowedField := range allowedFields {
-			if field == allowedField {
-				allowed = true
-				break
-			}
-		}
-		if !allowed || timeRange.Start.IsZero() && timeRange.End.IsZero() {
-			return nil, webcloud.ErrBadRequestParameters
-		}
-		if !timeRange.Start.IsZero() && !timeRange.End.IsZero() && !timeRange.Start.Before(timeRange.End.Time) {
-			return nil, webcloud.ErrBadRequestParameters
-		}
-		var startTime, endTime *time.Time
-		if !timeRange.Start.IsZero() {
-			value := timeRange.Start.Time
-			startTime = &value
-		}
-		if !timeRange.End.IsZero() {
-			value := timeRange.End.Time
-			endTime = &value
-		}
-		result = append(result, gormstarter.TimeRange{
-			Field:     field,
-			StartTime: startTime,
-			EndTime:   endTime,
-		})
-	}
-	return result, nil
 }
 
 func (v *EmployeeBizService) Save(save *model.EmployeeSDTO) (int64, error) {
@@ -170,7 +121,7 @@ func (v *EmployeeBizService) BaseQuery(condition map[string]any) ([]*model.Emplo
 }
 
 func (v *EmployeeBizService) BaseQueryPage(condition map[string]any, timeRanges []webcloud.TimeRange, pager *webcloud.Pager[model.EmployeeDTO]) error {
-	ranges, err := v.convertTimeRanges(timeRanges)
+	ranges, err := webcloud.ConvertTimeRanges(timeRanges, v.AllowedTimeRangeFields(), v.DefaultTimeRangeField())
 	if err != nil {
 		return err
 	}
@@ -273,7 +224,7 @@ func (v *EmployeeBizService) QueryPage(pager webcloud.PagerDTO[model.EmployeeQDT
 	if err != nil {
 		return webcloud.Pager[model.EmployeeDTO]{}, err
 	}
-	ranges, err := v.convertTimeRanges(pager.TimeRanges)
+	ranges, err := webcloud.ConvertTimeRanges(pager.TimeRanges, v.AllowedTimeRangeFields(), v.DefaultTimeRangeField())
 	if err != nil {
 		return webcloud.Pager[model.EmployeeDTO]{}, err
 	}
