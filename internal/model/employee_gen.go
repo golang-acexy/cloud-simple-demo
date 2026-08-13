@@ -21,6 +21,36 @@ type Employee struct {
 	UpdatedAt    gormstarter.Timestamp `gorm:"<-:false" json:"updatedAt"`     // 更新时间
 }
 
+// EmployeeColumns 定义 Employee Mapper 可使用的类型化字段。
+type EmployeeColumns struct {
+	ID           gormstarter.Column[Employee, int64]
+	DepartmentID gormstarter.Column[Employee, int64]
+	UserID       gormstarter.Column[Employee, int64]
+	EmployeeNo   gormstarter.Column[Employee, string]
+	Name         gormstarter.Column[Employee, string]
+	Email        gormstarter.Column[Employee, string]
+	Status       gormstarter.Column[Employee, int32]
+	CreatedAt    gormstarter.Column[Employee, gormstarter.Timestamp]
+	UpdatedAt    gormstarter.Column[Employee, gormstarter.Timestamp]
+}
+
+var employeeColumns = EmployeeColumns{
+	ID:           gormstarter.NewColumn(func(entity *Employee) *int64 { return &entity.ID }),
+	DepartmentID: gormstarter.NewColumn(func(entity *Employee) *int64 { return &entity.DepartmentID }),
+	UserID:       gormstarter.NewColumn(func(entity *Employee) *int64 { return &entity.UserID }),
+	EmployeeNo:   gormstarter.NewColumn(func(entity *Employee) *string { return &entity.EmployeeNo }),
+	Name:         gormstarter.NewColumn(func(entity *Employee) *string { return &entity.Name }),
+	Email:        gormstarter.NewColumn(func(entity *Employee) *string { return &entity.Email }),
+	Status:       gormstarter.NewColumn(func(entity *Employee) *int32 { return &entity.Status }),
+	CreatedAt:    gormstarter.NewColumn(func(entity *Employee) *gormstarter.Timestamp { return &entity.CreatedAt }),
+	UpdatedAt:    gormstarter.NewColumn(func(entity *Employee) *gormstarter.Timestamp { return &entity.UpdatedAt }),
+}
+
+// EmployeeColumnSet 返回 Employee 的只读字段元数据。
+func EmployeeColumnSet() *EmployeeColumns {
+	return &employeeColumns
+}
+
 func (Employee) TableName() string {
 	return TableNameEmployee
 }

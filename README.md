@@ -71,6 +71,23 @@ Model and DTOs
 
 Repository methods use business verbs such as `Save`, `Query`, `Modify`, and `Remove`; the embedded GORM mapper uses SQL-oriented verbs such as `Insert`, `Select`, `Update`, and `Delete`.
 
+Generated repositories expose `Columns()` together with `Wrapper()`,
+`PageWrapper()`, and `UpdateWrapper()`. Custom business queries can therefore
+compose type-safe conditions without constructing a Mapper directly:
+
+```go
+c := repo.Columns()
+records, err := repo.QueryByWrapper(
+	repo.Wrapper().
+		Eq(c.Status, int32(1)).
+		OrderByDesc(c.CreatedAt),
+)
+```
+
+The generic REST bridge keeps conditions and updates as database-column Maps.
+This preserves explicit zero values while generated BizServices translate the
+request into `rds.NewMapQuery` or `rds.NewMapPageQuery` calls.
+
 ## Authority Control
 
 The user-facing employee router is created with `NewBaseRouterWithAuthority`. The router resolves the current authority identity and controls the configured struct field and database column rather than trusting client input.
@@ -122,4 +139,5 @@ The demo intentionally depends on local infrastructure and is not a unit-test fi
 - This project demonstrates the complete cloud stack; it is not a reusable library.
 - Database-generated IDs and timestamps are not supplied by clients.
 - DTO definitions control writable and queryable fields exposed by base routers.
+- Empty query Maps are valid, while empty update and delete conditions remain protected.
 - Custom code should extend generated types instead of duplicating the framework's base CRUD pipeline.

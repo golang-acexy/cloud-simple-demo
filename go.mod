@@ -4,10 +4,10 @@ go 1.25.8
 
 require (
 	github.com/acexy/golang-toolkit v1.25.3
-	github.com/golang-acexy/cloud-database v1.25.1
+	github.com/golang-acexy/cloud-database v1.25.2-0.20260811092218-cfc24648cf7f
 	github.com/golang-acexy/cloud-web v1.25.1
 	github.com/golang-acexy/starter-gin v1.25.0
-	github.com/golang-acexy/starter-gorm v1.25.2
+	github.com/golang-acexy/starter-gorm v1.25.3-0.20260811085024-07d51cb120b2
 	github.com/golang-acexy/starter-parent v1.25.0
 	github.com/jinzhu/copier v0.4.0
 	gorm.io/gorm v1.31.2

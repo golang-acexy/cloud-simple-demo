@@ -19,6 +19,32 @@ type Department struct {
 	UpdatedAt   gormstarter.Timestamp `gorm:"<-:false" json:"updatedAt"`     // 更新时间
 }
 
+// DepartmentColumns 定义 Department Mapper 可使用的类型化字段。
+type DepartmentColumns struct {
+	ID          gormstarter.Column[Department, int64]
+	Code        gormstarter.Column[Department, string]
+	Name        gormstarter.Column[Department, string]
+	Description gormstarter.Column[Department, string]
+	Status      gormstarter.Column[Department, int32]
+	CreatedAt   gormstarter.Column[Department, gormstarter.Timestamp]
+	UpdatedAt   gormstarter.Column[Department, gormstarter.Timestamp]
+}
+
+var departmentColumns = DepartmentColumns{
+	ID:          gormstarter.NewColumn(func(entity *Department) *int64 { return &entity.ID }),
+	Code:        gormstarter.NewColumn(func(entity *Department) *string { return &entity.Code }),
+	Name:        gormstarter.NewColumn(func(entity *Department) *string { return &entity.Name }),
+	Description: gormstarter.NewColumn(func(entity *Department) *string { return &entity.Description }),
+	Status:      gormstarter.NewColumn(func(entity *Department) *int32 { return &entity.Status }),
+	CreatedAt:   gormstarter.NewColumn(func(entity *Department) *gormstarter.Timestamp { return &entity.CreatedAt }),
+	UpdatedAt:   gormstarter.NewColumn(func(entity *Department) *gormstarter.Timestamp { return &entity.UpdatedAt }),
+}
+
+// DepartmentColumnSet 返回 Department 的只读字段元数据。
+func DepartmentColumnSet() *DepartmentColumns {
+	return &departmentColumns
+}
+
 func (Department) TableName() string {
 	return TableNameDepartment
 }

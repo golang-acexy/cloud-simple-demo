@@ -11,6 +11,10 @@ type DepartmentMapper struct {
 	gormstarter.BaseMapper[model.Department]
 }
 
+func (DepartmentMapper) Columns() *model.DepartmentColumns {
+	return model.DepartmentColumnSet()
+}
+
 func (m DepartmentMapper) WithTxMapper(tx *gorm.DB) DepartmentMapper {
 	return DepartmentMapper{
 		BaseMapper: m.GetBaseMapperWithTx(tx),
@@ -19,6 +23,11 @@ func (m DepartmentMapper) WithTxMapper(tx *gorm.DB) DepartmentMapper {
 
 type DepartmentRepo struct {
 	rds.Repository[DepartmentRepo, DepartmentMapper, model.Department]
+}
+
+// Columns 返回 Department 对应的类型安全字段集合。
+func (r DepartmentRepo) Columns() *model.DepartmentColumns {
+	return r.RawMapper().Columns()
 }
 
 var departmentRepo = newDepartmentRepo()

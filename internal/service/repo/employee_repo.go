@@ -11,6 +11,10 @@ type EmployeeMapper struct {
 	gormstarter.BaseMapper[model.Employee]
 }
 
+func (EmployeeMapper) Columns() *model.EmployeeColumns {
+	return model.EmployeeColumnSet()
+}
+
 func (m EmployeeMapper) WithTxMapper(tx *gorm.DB) EmployeeMapper {
 	return EmployeeMapper{
 		BaseMapper: m.GetBaseMapperWithTx(tx),
@@ -19,6 +23,11 @@ func (m EmployeeMapper) WithTxMapper(tx *gorm.DB) EmployeeMapper {
 
 type EmployeeRepo struct {
 	rds.Repository[EmployeeRepo, EmployeeMapper, model.Employee]
+}
+
+// Columns 返回 Employee 对应的类型安全字段集合。
+func (r EmployeeRepo) Columns() *model.EmployeeColumns {
+	return r.RawMapper().Columns()
 }
 
 var employeeRepo = newEmployeeRepo()
