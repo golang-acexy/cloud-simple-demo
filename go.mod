@@ -3,11 +3,11 @@ module github.com/golang-acexy/cloud-simple-demo
 go 1.25.8
 
 require (
-	github.com/acexy/golang-toolkit v1.25.3
-	github.com/golang-acexy/cloud-database v1.25.2-0.20260811092218-cfc24648cf7f
-	github.com/golang-acexy/cloud-web v1.25.1
+	github.com/acexy/golang-toolkit v1.25.4
+	github.com/golang-acexy/cloud-database v1.25.2
+	github.com/golang-acexy/cloud-web v1.25.2
 	github.com/golang-acexy/starter-gin v1.25.0
-	github.com/golang-acexy/starter-gorm v1.25.3-0.20260811085024-07d51cb120b2
+	github.com/golang-acexy/starter-gorm v1.25.3
 	github.com/golang-acexy/starter-parent v1.25.0
 	github.com/jinzhu/copier v0.4.0
 	gorm.io/gorm v1.31.2
@@ -45,7 +45,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
 	github.com/quic-go/quic-go v0.61.0 // indirect
-	github.com/sirupsen/logrus v1.9.4 // indirect
+	github.com/sirupsen/logrus v1.10.0 // indirect
 	github.com/tidwall/gjson v1.19.0 // indirect
 	github.com/tidwall/match v1.2.0 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
@@ -53,12 +53,12 @@ require (
 	github.com/ugorji/go/codec v1.3.2 // indirect
 	go.mongodb.org/mongo-driver/v2 v2.8.0 // indirect
 	golang.org/x/arch v0.30.0 // indirect
-	golang.org/x/crypto v0.54.0 // indirect
-	golang.org/x/net v0.57.0 // indirect
+	golang.org/x/crypto v0.55.0 // indirect
+	golang.org/x/net v0.58.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
-	golang.org/x/text v0.40.0 // indirect
-	google.golang.org/protobuf v1.36.11 // indirect
+	golang.org/x/text v0.41.0 // indirect
+	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gorm.io/driver/mysql v1.6.0 // indirect
 	gorm.io/driver/postgres v1.6.2 // indirect
