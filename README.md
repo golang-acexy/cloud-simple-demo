@@ -23,7 +23,7 @@ Generated files provide the repeatable application foundation and stay aligned w
 
 ## Requirements
 
-- Go `1.25.8`
+- Go `1.26.7` or later
 - MySQL reachable at `127.0.0.1:13306`
 - Database `test`
 - Demo tables matching the generated `Department` and `Employee` models
@@ -72,7 +72,7 @@ Model and DTOs
 Repository methods use business verbs such as `Save`, `Query`, `Modify`, and `Remove`; the embedded GORM mapper uses SQL-oriented verbs such as `Insert`, `Select`, `Update`, and `Delete`.
 
 Generated repositories expose `Columns()` together with `Wrapper()`,
-`PageWrapper()`, and `UpdateWrapper()`. Custom business queries can therefore
+`PageWrapper()`, and `ModifyWrapper()`. Custom business queries can therefore
 compose type-safe conditions without constructing a Mapper directly:
 
 ```go
